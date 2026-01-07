@@ -13,6 +13,8 @@ provider:
           Action:
             - dynamodb:PutItem
             - dynamodb:Query
+            - dynamodb:GetItem
+            - dynamodb:DeleteItem
           Resource:
             - Fn::GetAtt:
               - CKSCartsTable
@@ -23,6 +25,12 @@ provider:
                   - CKSCartsTable
                   - Arn
                 - "/index/customer_id_index"
+            - Fn::Join:
+              - ""
+              - - Fn::GetAtt:
+                  - CKSCartsTable
+                  - Arn
+                - "/index/expires_at_index"
         - Effect: Allow
           Action:
             - lambda:InvokeFunction
@@ -47,6 +55,41 @@ functions:
           path: /v1/cart
           method: POST
 
+  expireCarts:
+    handler: src/adapters/driver/lambda/expire_carts.handler
+    memorySize: 128
+    events:
+      # - schedule:
+      #     rate: rate(1 hour)
+      #     enabled: true
+      - http:
+          path: /v1/cart/expire
+          method: POST
+
+  addProductsToCart:
+    handler: src/adapters/driver/lambda/add_products_to_cart.handler
+    memorySize: 128
+    events:
+      - http:
+          path: /v1/cart/{cart_id}/products
+          method: POST
+
+  removeProductsFromCart:
+    handler: src/adapters/driver/lambda/remove_products_from_cart.handler
+    memorySize: 128
+    events:
+      - http:
+          path: /v1/cart/{cart_id}/products
+          method: DELETE
+
+  checkoutCart:
+    handler: src/adapters/driver/lambda/checkout_cart.handler
+    memorySize: 128
+    events:
+      - http:
+          path: /v1/cart/{cart_id}/checkout
+          method: POST
+
 resources:
   Resources:
     CKSCartsTable:
@@ -58,6 +101,10 @@ resources:
             AttributeType: S
           - AttributeName: customer_id
             AttributeType: S
+          - AttributeName: status
+            AttributeType: S
+          - AttributeName: expires_at
+            AttributeType: N
         KeySchema:
           - AttributeName: id
             KeyType: HASH
@@ -67,6 +114,14 @@ resources:
             KeySchema:
               - AttributeName: customer_id
                 KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+          - IndexName: expires_at_index
+            KeySchema:
+              - AttributeName: status
+                KeyType: HASH
+              - AttributeName: expires_at
+                KeyType: RANGE
             Projection:
               ProjectionType: ALL
 

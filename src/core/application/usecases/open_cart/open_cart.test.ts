@@ -11,6 +11,10 @@ describe('OpenCartUseCase', () => {
     cartRepository = {
       create: jest.fn(),
       findByCustomerId: jest.fn(),
+      findAllExpired: jest.fn(),
+      findById: jest.fn(),
+      update: jest.fn(),
+      remove: jest.fn(),
     } as jest.Mocked<ICartRepository>
 
     useCase = new OpenCartUseCase(cartRepository)

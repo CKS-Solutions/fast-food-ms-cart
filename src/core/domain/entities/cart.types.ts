@@ -4,7 +4,7 @@ export enum CartStatus {
 }
 
 export type CartProduct = {
-	productId: string
+	product_id: string
 	quantity: number
 	price: number
 }
