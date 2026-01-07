@@ -1,0 +1,82 @@
+service: ms-cart
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  stage: ${opt:stage, 'api'}
+  region: us-east-1
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:PutItem
+            - dynamodb:Query
+          Resource:
+            Fn::GetAtt:
+              - CKSCartsTable
+              - Arn
+        - Effect: Allow
+          Action:
+            - lambda:InvokeFunction
+          Resource: "*"
+  environment:
+    REGION: ${self:provider.region}
+    STAGE: ${self:provider.stage}
+
+package:
+  individually: true
+  excludeDevDependencies: true
+  exclude:
+    - node_modules/@aws-sdk/**
+    - node_modules/**/@aws-sdk/**
+
+functions:
+  openCart:
+    handler: src/adapters/driver/lambda/open_cart.handler
+    memorySize: 128
+    events:
+      - http:
+          path: /v1/cart
+          method: POST
+
+resources:
+  Resources:
+    CKSCartsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: CKS.Carts
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: customer_id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+        GlobalSecondaryIndexes:
+          - IndexName: customer_id_index
+            KeySchema:
+              - AttributeName: customer_id
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+
+plugins:
+  - serverless-esbuild
+  - serverless-prune-plugin
+  - serverless-localstack
+
+custom:
+  localstack:
+    stages:
+      - local
+    host: http://localhost
+    edgePort: 4566
+    autostart: false
+  esbuild:
+    bundle: true
+    minify: true
+    target: node20

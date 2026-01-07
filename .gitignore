@@ -1,0 +1,19 @@
+# Serverless directories
+.serverless
+node_modules
+
+# golang output binary directory
+bin
+
+# golang vendor (dependencies) directory
+vendor
+
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+
+coverage

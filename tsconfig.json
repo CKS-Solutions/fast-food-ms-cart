@@ -1,0 +1,37 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "strict": true,
+    "skipDefaultLibCheck": true,
+    "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "ES2023",
+    "sourceMap": true,
+    "outDir": "./dist",
+    "incremental": true,
+    "skipLibCheck": true,
+    "strictNullChecks": true,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitAny": false,
+    "strictBindCallApply": false,
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "@entities/*": ["./src/core/domain/entities/*"],
+      "@usecases/*": ["./src/core/application/usecases/*"],
+      "@ports/*": ["./src/core/domain/ports/*"],
+      "@dto/*": ["./src/adapters/driver/dto/*"],
+      "@aws/*": ["./src/infra/aws/*"],
+      "@driven_dynamodb/*": ["./src/adapters/driven/dynamodb/*"],
+      "@driven_mercadopago/*": ["./src/adapters/driven/mercadopago/*"],
+      "@driven_sns/*": ["./src/adapters/driven/sns/*"],
+      "@driven_sqs/*": ["./src/adapters/driven/sqs/*"],
+      "@driven_lambda/*": ["./src/adapters/driven/lambda/*"],
+      "@di/*": ["./src/infra/di/*"],
+      "@utils/*": ["./src/utils/*"],
+    }
+  }
+}
