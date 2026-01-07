@@ -14,9 +14,15 @@ provider:
             - dynamodb:PutItem
             - dynamodb:Query
           Resource:
-            Fn::GetAtt:
+            - Fn::GetAtt:
               - CKSCartsTable
               - Arn
+            - Fn::Join:
+              - ""
+              - - Fn::GetAtt:
+                  - CKSCartsTable
+                  - Arn
+                - "/index/customer_id_index"
         - Effect: Allow
           Action:
             - lambda:InvokeFunction

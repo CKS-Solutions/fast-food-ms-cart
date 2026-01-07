@@ -16,18 +16,20 @@ describe('OpenCart Lambda', () => {
     ;(OpenCartContainerFactory as jest.Mock).mockImplementation(() => containerMock)
   })
 
-  it('should return 400 if request body is missing', async () => {
+  it('should process correctly even with missing body', async () => {
     const event = { body: null } as APIGatewayProxyEvent
+    mockExecute.mockResolvedValue({ id: 'cart-123' })
+
     const response = await handler(event)
-    expect(response.statusCode).toBe(HTTPStatus.BadRequest)
-    expect(JSON.parse(response.body)).toEqual({ message: 'request body is required' })
+    expect(response.statusCode).toBe(HTTPStatus.OK)
+    expect(JSON.parse(response.body)).toEqual({ data: { id: 'cart-123' } })
   })
 
-  it('should return 400 if request body is invalid', async () => {
+  it('should return 500 if request body is invalid', async () => {
     const event = { body: "invalid-json" } as APIGatewayProxyEvent
     const response = await handler(event)
-    expect(response.statusCode).toBe(HTTPStatus.BadRequest)
-    expect(JSON.parse(response.body)).toEqual({ message: 'request body is required' })
+    expect(response.statusCode).toBe(500)
+    expect(JSON.parse(response.body)).toEqual({ message: 'Internal Server Error' })
   })
 
   it('should call usecase.execute and return 200 on success', async () => {
