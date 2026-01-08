@@ -1,3 +1,4 @@
 export type OpenCartInputDTO = {
-	customerId?: string
+	cpf?: string
+	name?: string
 }

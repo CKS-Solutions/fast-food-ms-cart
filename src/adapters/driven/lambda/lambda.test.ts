@@ -30,4 +30,33 @@ describe('LambdaAdapter', () => {
     expect(calledCommand.InvocationType).toBe('Event')
     expect(JSON.parse(Buffer.from(calledCommand.Payload).toString()).body).toEqual(payload)
   })
+
+  it('should invoke Lambda and return parsed response', async () => {
+    const functionName = 'myLambda'
+    const pathParams = { id: '123' }
+    const lambdaResponsePayload = { result: 'success' }
+
+    lambdaClient.send.mockResolvedValue({
+      Payload: Buffer.from(JSON.stringify(lambdaResponsePayload)),
+    })
+
+    const result = await adapter.invoke<any>(functionName, pathParams)
+
+    expect(lambdaClient.send).toHaveBeenCalledTimes(1)
+    const calledCommand = lambdaClient.send.mock.calls[0][0]
+    expect(calledCommand.FunctionName).toBe(functionName)
+    expect(calledCommand.InvocationType).toBe('RequestResponse')
+    expect(JSON.parse(Buffer.from(calledCommand.Payload).toString()).pathParameters).toEqual(pathParams)
+    expect(result).toEqual(lambdaResponsePayload)
+  })
+
+  it('should return null if Lambda response has no payload', async () => {
+    const functionName = 'myLambda'
+    const pathParams = { id: '123' }
+
+    lambdaClient.send.mockResolvedValue({})
+
+    const result = await adapter.invoke<any>(functionName, pathParams)
+    expect(result).toBeNull()
+  })
 })
