@@ -10,6 +10,10 @@ Serviço designado a criar, atualizar e fazer checkout de carrinhos
 
 <img width="710" height="292" alt="image" src="https://github.com/user-attachments/assets/65e9c8c1-ac2e-41ff-a3b7-1c4acef6cb0c" />
 
+### Evidencia de testes Sonar
+
+<img width="1917" height="909" alt="image" src="https://github.com/user-attachments/assets/7ad25d8d-8c00-4e3a-8449-3e31bd5b1f1f" />
+
 ### Estrutura de arquivos
 
 ```
